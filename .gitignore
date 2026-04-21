@@ -1,0 +1,9 @@
+.env
+.venv/
+__pycache__/
+*.egg-info/
+outputs/
+*.pyc
+.DS_Store
+.python-version
+.claude/

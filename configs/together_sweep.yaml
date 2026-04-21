@@ -1,0 +1,27 @@
+# Together AI sweep configuration
+#
+# Target model:  meta-llama/Llama-3.3-70B-Instruct-Turbo
+# Judge model:   deepseek-ai/DeepSeek-V3.1
+#
+# Run sweep:
+#   safety-probe sweep \
+#     --model meta-llama/Llama-3.3-70B-Instruct-Turbo \
+#     --backend openai \
+#     --base-url https://api.together.xyz/v1 \
+#     --api-key-env TOGETHER_API_KEY \
+#     --config configs/together_sweep.yaml
+#
+# Analyze with Together judge:
+#   safety-probe analyze outputs/<run>.json \
+#     --judge rule+llm \
+#     --judge-provider together \
+#     --judge-model deepseek-ai/DeepSeek-V3.1
+
+base:
+  max_new_tokens: 512
+  sampling_strategy: "multinomial"
+  seed: 42
+
+grid:
+  temperature: [0.0, 0.3, 0.5, 0.7, 1.0, 1.2, 1.5]
+  top_p: [0.9, 1.0]

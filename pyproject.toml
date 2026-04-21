@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safety-probe"
+version = "0.1.0"
+description = "Inference-time safety probing framework for LLMs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["llm", "safety", "evaluation", "red-teaming", "inference"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "torch>=2.1",
+    "transformers>=4.40",
+    "datasets>=2.18",
+    "accelerate>=0.28",
+    "openai>=1.20",
+    "anthropic>=0.25",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "scipy>=1.12",
+    "scikit-learn>=1.4",
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "rich>=13.7",
+    "typer>=0.12",
+    "python-dotenv>=1.0",
+    "tqdm>=4.66",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+]
+
+[project.optional-dependencies]
+vllm = ["vllm>=0.4"]
+quant = ["bitsandbytes>=0.43"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.9",
+    "pre-commit>=3.7",
+]
+
+[project.scripts]
+safety-probe = "safety_probe.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["safety_probe*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+strict = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

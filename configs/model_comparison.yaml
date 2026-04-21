@@ -1,0 +1,34 @@
+# Model comparison sweep configuration
+# Run with: safety-probe compare --config configs/model_comparison.yaml
+#
+# Compare safety across multiple model endpoints using the same probe set.
+# Each model entry needs: label, model_id, backend, and optionally base_url.
+#
+# backend options:
+#   "openai"       — any OpenAI-compatible HTTP API (local vLLM, Together, Groq, etc.)
+#   "transformers" — load weights directly from HuggingFace
+#   "vllm"         — local vLLM process (not HTTP server)
+
+models:
+  - label: "local-int4"
+    model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+    backend: "openai"
+    base_url: "http://localhost:8000/v1"    # vLLM --quantization awq/gptq/gguf
+
+  - label: "local-bf16"
+    model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+    backend: "openai"
+    base_url: "http://localhost:9000/v1"    # second vLLM server, full precision
+
+  # Example: compare against a hosted API variant
+  # - label: "together-bf16"
+  #   model_id: "meta-llama/Llama-3-8b-chat-hf"
+  #   backend: "openai"
+  #   base_url: "https://api.together.xyz/v1"
+
+base:
+  temperature: 0.7
+  top_p: 0.95
+  max_new_tokens: 256
+  sampling_strategy: "multinomial"
+  seed: 42

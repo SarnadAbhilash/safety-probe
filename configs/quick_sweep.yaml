@@ -1,0 +1,10 @@
+# Quick sweep — minimal configs for rapid iteration / CI checks
+# 4 temperatures × core probe set × 1 sample = fast run
+
+base:
+  max_new_tokens: 512
+  sampling_strategy: "multinomial"
+  seed: 42
+
+grid:
+  temperature: [0.0, 0.5, 1.0, 1.5]

@@ -1,0 +1,13 @@
+# Speculative decoding sweep
+# Requires vLLM backend: safety-probe sweep --backend vllm --config configs/speculative_sweep.yaml
+# Note: speculative_model must be set at VLLMBackend init time, not per-request.
+# Use this config to sweep temperature while speculative decoding is active.
+
+base:
+  max_new_tokens: 256
+  sampling_strategy: "multinomial"
+  num_speculative_tokens: 5
+  seed: 42
+
+grid:
+  temperature: [0.0, 0.3, 0.5, 0.7, 1.0, 1.2, 1.5]

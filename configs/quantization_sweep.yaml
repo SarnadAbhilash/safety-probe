@@ -1,0 +1,18 @@
+# Quantization sweep configuration
+# Run with: safety-probe quant-sweep --model <model_id> --config configs/quantization_sweep.yaml
+#
+# Sweeps the model across precision levels to measure safety degradation.
+# int8 and int4 require bitsandbytes: pip install safety-probe[quant]
+
+quantization_levels:
+  - "bf16"   # full-precision baseline
+  - "fp16"   # half-precision (most common deployment)
+  - "int8"   # 8-bit quantization via bitsandbytes LLM.int8()
+  - "int4"   # 4-bit NF4 quantization via bitsandbytes QLoRA config
+
+base:
+  temperature: 0.7
+  top_p: 0.95
+  max_new_tokens: 256
+  sampling_strategy: "multinomial"
+  seed: 42
