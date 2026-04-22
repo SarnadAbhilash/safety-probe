@@ -37,6 +37,8 @@ def sweep(
     base_url: Annotated[Optional[str], typer.Option("--base-url", help="API base URL (e.g. https://api.groq.com/openai/v1)")] = None,
     api_key_env: Annotated[str, typer.Option("--api-key-env", help="Env var name holding the API key")] = "OPENAI_API_KEY",
     rate_limit: Annotated[Optional[int], typer.Option("--rate-limit", "-r", help="Max requests per minute (for hosted APIs)")] = None,
+    speculative_model: Annotated[Optional[str], typer.Option("--speculative-model", help="Draft model for speculative decoding (vLLM only)")] = None,
+    num_speculative_tokens: Annotated[int, typer.Option("--num-speculative-tokens", help="Tokens per speculative step (vLLM only)")] = 5,
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Print each probe, response, and verdict in real time")] = False,
 ) -> None:
     """Run a parameter sweep and save results."""
@@ -55,7 +57,7 @@ def sweep(
         be = OpenAIBackend(model, base_url=base_url, api_key=os.environ.get(api_key_env))
     elif backend == "vllm":
         from safety_probe.backends.vllm_backend import VLLMBackend
-        be = VLLMBackend(model)
+        be = VLLMBackend(model, speculative_model=speculative_model, num_speculative_tokens=num_speculative_tokens)
     else:
         console.print(f"[red]Unknown backend: {backend}[/red]")
         raise typer.Exit(1)

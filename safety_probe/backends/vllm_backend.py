@@ -38,12 +38,16 @@ class VLLMBackend(BaseBackend):
         gpu_memory_utilization: float = 0.85,
         max_model_len: int | None = None,
         tensor_parallel_size: int = 1,
+        speculative_model: str | None = None,
+        num_speculative_tokens: int = 5,
         **kwargs: Any,
     ) -> None:
         super().__init__(model_id, **kwargs)
         self.gpu_memory_utilization = gpu_memory_utilization
         self.max_model_len = max_model_len
         self.tensor_parallel_size = tensor_parallel_size
+        self.speculative_model = speculative_model
+        self.num_speculative_tokens = num_speculative_tokens
         self._llm: Any = None
         self._tokenizer: Any = None
 
@@ -63,6 +67,9 @@ class VLLMBackend(BaseBackend):
         }
         if self.max_model_len is not None:
             llm_kwargs["max_model_len"] = self.max_model_len
+        if self.speculative_model is not None:
+            llm_kwargs["speculative_model"] = self.speculative_model
+            llm_kwargs["num_speculative_tokens"] = self.num_speculative_tokens
 
         self._llm = LLM(**llm_kwargs)
         self._tokenizer = AutoTokenizer.from_pretrained(self.model_id)
