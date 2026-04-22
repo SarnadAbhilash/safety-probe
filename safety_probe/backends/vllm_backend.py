@@ -68,8 +68,10 @@ class VLLMBackend(BaseBackend):
         if self.max_model_len is not None:
             llm_kwargs["max_model_len"] = self.max_model_len
         if self.speculative_model is not None:
-            llm_kwargs["speculative_model"] = self.speculative_model
-            llm_kwargs["num_speculative_tokens"] = self.num_speculative_tokens
+            llm_kwargs["speculative_config"] = {
+                "model": self.speculative_model,
+                "num_speculative_tokens": self.num_speculative_tokens,
+            }
 
         self._llm = LLM(**llm_kwargs)
         self._tokenizer = AutoTokenizer.from_pretrained(self.model_id)
