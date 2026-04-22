@@ -67,7 +67,12 @@ class VLLMBackend(BaseBackend):
         }
         if self.max_model_len is not None:
             llm_kwargs["max_model_len"] = self.max_model_len
-        if self.speculative_model is not None:
+        if self.speculative_model == "prompt_lookup":
+            llm_kwargs["speculative_config"] = {
+                "method": "prompt_lookup",
+                "num_speculative_tokens": self.num_speculative_tokens,
+            }
+        elif self.speculative_model is not None:
             llm_kwargs["speculative_config"] = {
                 "model": self.speculative_model,
                 "num_speculative_tokens": self.num_speculative_tokens,
