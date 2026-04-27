@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import os
-import time
 import random
+import time
 from typing import Any
 
 from safety_probe.backends.base import BaseBackend, GenerationConfig, GenerationResult
@@ -101,6 +101,39 @@ class OpenAIBackend(BaseBackend):
 
         return results
 
+    def generate_messages(
+        self,
+        messages: list[dict[str, str]],
+        config: GenerationConfig,
+    ) -> GenerationResult:
+        """Generate one response from an explicit chat message history."""
+        if not self._loaded:
+            raise RuntimeError("Call load() or use as context manager before generate_messages().")
+
+        all_messages = []
+        if self.system_prompt and not any(m.get("role") == "system" for m in messages):
+            all_messages.append({"role": "system", "content": self.system_prompt})
+        all_messages.extend(messages)
+
+        kwargs = self._build_request_kwargs(config)
+        t0 = time.perf_counter()
+        response = self._call_with_retry(all_messages, kwargs)
+        latency = time.perf_counter() - t0
+
+        msg = response.choices[0].message
+        content = msg.content or getattr(msg, "reasoning_content", None) or ""
+        num_tokens = response.usage.completion_tokens if response.usage else None
+        prompt = "\n".join(f"{m['role'].upper()}: {m['content']}" for m in messages)
+
+        return GenerationResult(
+            prompt=prompt,
+            response=content.strip(),
+            config=config,
+            model_id=self.model_id,
+            num_tokens=num_tokens,
+            latency_s=latency,
+        )
+
     def unload(self) -> None:
         self._client = None
         self._loaded = False
@@ -118,7 +151,7 @@ class OpenAIBackend(BaseBackend):
 
     def _call_with_retry(self, messages: list, kwargs: dict, max_retries: int = 6) -> Any:
         """Call the API with exponential backoff on 429 / 5xx errors."""
-        from openai import RateLimitError, APIStatusError
+        from openai import APIStatusError, RateLimitError
 
         wait = 15.0  # start at 15s — upstream provider 429s need longer waits
         for attempt in range(max_retries):

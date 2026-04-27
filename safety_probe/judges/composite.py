@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from safety_probe.judges.base import BaseJudge, JudgementResult, Verdict
+from safety_probe.judges.base import BaseJudge, JudgementResult
 from safety_probe.judges.rule_judge import RuleJudge
 from safety_probe.probes.base import ProbeCategory
 

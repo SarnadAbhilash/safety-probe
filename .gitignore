@@ -7,3 +7,6 @@ __pycache__/
 .DS_Store
 .python-version
 .claude/
+CLAUDE.md
+AGENT.md
+AGENTS.md

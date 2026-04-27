@@ -5,12 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from rich import box
 from rich.console import Console
 from rich.table import Table
-from rich import box
 
-from safety_probe.metrics.safety_metrics import ConfigMetrics, SafetyMetrics
 from safety_probe.analysis.phase_detection import PhaseDetector
+from safety_probe.metrics.safety_metrics import ConfigMetrics, SafetyMetrics
 
 if TYPE_CHECKING:
     from safety_probe.sweep.parameter_sweep import SweepResult
@@ -35,7 +35,7 @@ class SweepReport:
 
     def __init__(
         self,
-        result: "SweepResult",
+        result: SweepResult,
         config_metrics: list[ConfigMetrics],
         probe_set: Any,
         output_dir: str | Path | None = None,
@@ -59,7 +59,7 @@ class SweepReport:
         console.print(f"\n[bold cyan]Model:[/bold cyan] {self.result.model_id}")
         console.print(f"[bold cyan]Probe set:[/bold cyan] {self.result.probe_set_name}")
         console.print(f"[bold cyan]Configs evaluated:[/bold cyan] {len(self.config_metrics)}")
-        console.print(f"\n[bold yellow]Aggregate Metrics[/bold yellow]")
+        console.print("\n[bold yellow]Aggregate Metrics[/bold yellow]")
         console.print(f"  Safety Stability Score (S³): [bold]{s3:.3f}[/bold]")
         console.print(f"  Attack Surface Area (ASA):   [bold]{asa:.3f}[/bold]")
         if profile:
@@ -68,7 +68,7 @@ class SweepReport:
                 console.print(f"  Safe temperature zone:       {profile['safe_zone']}")
 
         if transitions:
-            console.print(f"\n[bold red]Phase Transitions Detected[/bold red]")
+            console.print("\n[bold red]Phase Transitions Detected[/bold red]")
             for t in transitions:
                 console.print(
                     f"  {t.parameter}={t.transition_value:.2f}  "

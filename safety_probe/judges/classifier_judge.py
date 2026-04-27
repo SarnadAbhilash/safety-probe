@@ -60,6 +60,7 @@ class ClassifierJudge(BaseJudge):
 
     def unload(self) -> None:
         import gc
+
         import torch
         del self._model
         del self._tokenizer

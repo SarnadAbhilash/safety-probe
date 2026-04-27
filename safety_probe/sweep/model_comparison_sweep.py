@@ -32,7 +32,7 @@ class ModelSpec:
     quantization: str | None = None  # for transformers backend
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "ModelSpec":
+    def from_dict(cls, d: dict[str, Any]) -> ModelSpec:
         return cls(
             label=d["label"],
             model_id=d["model_id"],
@@ -44,8 +44,9 @@ class ModelSpec:
 
     def build_backend(self) -> BaseBackend:
         if self.backend == "openai":
-            from safety_probe.backends.openai_backend import OpenAIBackend
             import os
+
+            from safety_probe.backends.openai_backend import OpenAIBackend
             api_key = self.api_key or os.environ.get("OPENAI_API_KEY", "no-key")
             return OpenAIBackend(
                 model_id=self.model_id,
@@ -181,7 +182,7 @@ class ModelComparisonResult:
         console.print(f"[green]Saved comparison results to {path}[/green]")
 
     @classmethod
-    def load(cls, path: str | Path) -> "ModelComparisonResult":
+    def load(cls, path: str | Path) -> ModelComparisonResult:
         from safety_probe.backends.base import GenerationConfig
         from safety_probe.judges.base import JudgementResult
 
@@ -278,7 +279,7 @@ class ModelComparisonSweep:
         probe_set: ProbeSet,
         judge: BaseJudge,
         **kwargs: Any,
-    ) -> "ModelComparisonSweep":
+    ) -> ModelComparisonSweep:
         """Load specs and base config from a YAML file."""
         import yaml
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from dotenv import load_dotenv
@@ -27,23 +27,23 @@ console = Console()
 @app.command()
 def sweep(
     model: Annotated[str, typer.Option("--model", "-m", help="Model ID (HF hub or OpenAI name)")],
-    config: Annotated[Optional[Path], typer.Option("--config", "-c", help="YAML sweep config")] = None,
+    config: Annotated[Path | None, typer.Option("--config", "-c", help="YAML sweep config")] = None,
     probe_set: Annotated[str, typer.Option("--probe-set", "-p", help="Probe set name")] = "core",
     backend: Annotated[str, typer.Option("--backend", "-b", help="Backend: transformers|vllm|openai")] = "transformers",
     n_samples: Annotated[int, typer.Option("--n-samples", "-n", help="Samples per config")] = 1,
-    temperatures: Annotated[Optional[str], typer.Option("--temperatures", help="Comma-separated temps, e.g. 0.0,0.5,1.0")] = None,
+    temperatures: Annotated[str | None, typer.Option("--temperatures", help="Comma-separated temps, e.g. 0.0,0.5,1.0")] = None,
     output_dir: Annotated[str, typer.Option("--output-dir", "-o", help="Output directory")] = "outputs",
     judge: Annotated[str, typer.Option("--judge", "-j", help="Judge level: rule|rule+classifier|full")] = "rule",
-    base_url: Annotated[Optional[str], typer.Option("--base-url", help="API base URL (e.g. https://api.groq.com/openai/v1)")] = None,
+    base_url: Annotated[str | None, typer.Option("--base-url", help="API base URL (e.g. https://api.groq.com/openai/v1)")] = None,
     api_key_env: Annotated[str, typer.Option("--api-key-env", help="Env var name holding the API key")] = "OPENAI_API_KEY",
-    rate_limit: Annotated[Optional[int], typer.Option("--rate-limit", "-r", help="Max requests per minute (for hosted APIs)")] = None,
-    speculative_model: Annotated[Optional[str], typer.Option("--speculative-model", help="Draft model for speculative decoding (vLLM only)")] = None,
+    rate_limit: Annotated[int | None, typer.Option("--rate-limit", "-r", help="Max requests per minute (for hosted APIs)")] = None,
+    speculative_model: Annotated[str | None, typer.Option("--speculative-model", help="Draft model for speculative decoding (vLLM only)")] = None,
     num_speculative_tokens: Annotated[int, typer.Option("--num-speculative-tokens", help="Tokens per speculative step (vLLM only)")] = 5,
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Print each probe, response, and verdict in real time")] = False,
 ) -> None:
     """Run a parameter sweep and save results."""
-    from safety_probe.backends.transformers_backend import TransformersBackend
     from safety_probe.backends.openai_backend import OpenAIBackend
+    from safety_probe.backends.transformers_backend import TransformersBackend
     from safety_probe.judges.composite import CompositeJudge
     from safety_probe.probes.probe_sets import load_probe_set
     from safety_probe.sweep.grid import SweepGrid
@@ -107,8 +107,8 @@ def sweep(
 @app.command(name="quant-sweep")
 def quant_sweep(
     model: Annotated[str, typer.Option("--model", "-m", help="HuggingFace model ID")],
-    config: Annotated[Optional[Path], typer.Option("--config", "-c", help="YAML quant sweep config")] = None,
-    quantization: Annotated[Optional[str], typer.Option("--quantization", "-q", help="Comma-separated levels, e.g. bf16,int8,int4")] = None,
+    config: Annotated[Path | None, typer.Option("--config", "-c", help="YAML quant sweep config")] = None,
+    quantization: Annotated[str | None, typer.Option("--quantization", "-q", help="Comma-separated levels, e.g. bf16,int8,int4")] = None,
     probe_set: Annotated[str, typer.Option("--probe-set", "-p", help="Probe set name")] = "core",
     n_samples: Annotated[int, typer.Option("--n-samples", "-n", help="Samples per quantization level")] = 1,
     temperature: Annotated[float, typer.Option("--temperature", "-t", help="Base generation temperature")] = 0.7,
@@ -119,6 +119,7 @@ def quant_sweep(
 ) -> None:
     """Sweep a model across quantization precision levels (bf16→fp16→int8→int4)."""
     import yaml
+
     from safety_probe.backends.base import GenerationConfig
     from safety_probe.judges.composite import CompositeJudge
     from safety_probe.probes.probe_sets import load_probe_set
@@ -171,14 +172,14 @@ def quant_sweep(
 
 @app.command()
 def compare(
-    config: Annotated[Optional[Path], typer.Option("--config", "-c", help="YAML model comparison config")] = None,
-    model: Annotated[Optional[list[str]], typer.Option("--model", "-m", help="label:model_id:base_url  (repeat for each model)")] = None,
+    config: Annotated[Path | None, typer.Option("--config", "-c", help="YAML model comparison config")] = None,
+    model: Annotated[list[str] | None, typer.Option("--model", "-m", help="label:model_id:base_url  (repeat for each model)")] = None,
     probe_set: Annotated[str, typer.Option("--probe-set", "-p")] = "core",
     n_samples: Annotated[int, typer.Option("--n-samples", "-n")] = 1,
     temperature: Annotated[float, typer.Option("--temperature", "-t")] = 0.7,
     output_dir: Annotated[str, typer.Option("--output-dir", "-o")] = "outputs",
     judge: Annotated[str, typer.Option("--judge", "-j", help="rule|rule+classifier|full")] = "rule",
-    rate_limit: Annotated[Optional[int], typer.Option("--rate-limit", "-r", help="Max requests/min per model")] = None,
+    rate_limit: Annotated[int | None, typer.Option("--rate-limit", "-r", help="Max requests/min per model")] = None,
     verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ) -> None:
     """Compare safety across multiple model endpoints with the same probe set.
@@ -194,6 +195,7 @@ def compare(
           --model "local-bf16:llama3:http://localhost:9000/v1"
     """
     import yaml
+
     from safety_probe.backends.base import GenerationConfig
     from safety_probe.judges.composite import CompositeJudge
     from safety_probe.probes.probe_sets import load_probe_set
@@ -254,7 +256,7 @@ def compare(
 def analyze(
     results_path: Annotated[Path, typer.Argument(help="Path to sweep results JSON")],
     probe_set: Annotated[str, typer.Option("--probe-set", "-p")] = "core",
-    output_dir: Annotated[Optional[Path], typer.Option("--output-dir", "-o")] = None,
+    output_dir: Annotated[Path | None, typer.Option("--output-dir", "-o")] = None,
     plots: Annotated[bool, typer.Option("--plots/--no-plots")] = True,
     rejudge: Annotated[bool, typer.Option("--rejudge", help="Re-run judge on saved responses (picks up judge fixes)")] = False,
     judge: Annotated[str, typer.Option("--judge", "-j", help="Judge level: rule|rule+llm")] = "rule",
@@ -262,19 +264,19 @@ def analyze(
     judge_model: Annotated[str, typer.Option("--judge-model", help="LLM judge model ID")] = "deepseek-ai/DeepSeek-V3.1",
 ) -> None:
     """Analyze saved sweep results and print a report."""
-    from safety_probe.sweep.parameter_sweep import SweepResult
-    from safety_probe.probes.probe_sets import load_probe_set
-    from safety_probe.metrics.safety_metrics import SafetyMetrics
     from safety_probe.analysis.report import SweepReport
     from safety_probe.judges.composite import CompositeJudge
-    from safety_probe.judges.base import JudgementResult
+    from safety_probe.metrics.safety_metrics import SafetyMetrics
+    from safety_probe.probes.probe_sets import load_probe_set
+    from safety_probe.sweep.parameter_sweep import SweepResult
 
     result = SweepResult.load(results_path)
     probe_set_obj = load_probe_set(probe_set)
 
     if rejudge:
         import time as _time
-        from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+
+        from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
         if judge == "rule+llm":
             judge_obj = CompositeJudge(levels=["rule", "llm"], llm_provider=judge_provider, llm_model=judge_model)
             min_gap_s = 60.0 / 25  # 25 rpm conservative for LLM judge
@@ -341,8 +343,8 @@ def analyze(
 @app.command()
 def probes(
     list_sets: Annotated[bool, typer.Option("--list", "-l", help="List available probe sets")] = False,
-    show: Annotated[Optional[str], typer.Option("--show", "-s", help="Show probes in a set")] = None,
-    category: Annotated[Optional[str], typer.Option("--category", "-c")] = None,
+    show: Annotated[str | None, typer.Option("--show", "-s", help="Show probes in a set")] = None,
+    category: Annotated[str | None, typer.Option("--category", "-c")] = None,
 ) -> None:
     """List or inspect probe sets."""
     from safety_probe.probes.probe_sets import _REGISTRY, load_probe_set
@@ -371,7 +373,7 @@ def probes(
 
 @app.command()
 def profiles(
-    use_case: Annotated[Optional[str], typer.Argument(help="Show config for a use case")] = None,
+    use_case: Annotated[str | None, typer.Argument(help="Show config for a use case")] = None,
 ) -> None:
     """Show recommended safety parameter profiles."""
     from safety_probe.mitigations.profiles import PROFILES

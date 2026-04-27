@@ -6,6 +6,27 @@ Most safety benchmarks evaluate a model at a single default configuration. This 
 
 ---
 
+## Part of the AI Safety Research Stack
+
+`safety-probe` is the evaluation toolkit (layer 1) of a three-part experimental safety research stack:
+
+```
+safety-probe              →   adaptive-redteam         →   realtime-safety-monitor
+(evaluation toolkit)          (red-teaming engine)          (inference monitoring)
+
+Probes, judges, metrics,      Discovers failure-             Monitors live inference
+inference parameter sweep     inducing prompts               using patterns from
+across harm categories        via adaptive mutation          red-teaming
+```
+
+- **safety-probe** (this repo) — shared evaluation primitives: harm categories, probe sets, judge abstractions, metrics, inference parameter sweep
+- **[adaptive-redteam](https://github.com/SarnadAbhilash/adaptive-redteam)** — consumes this toolkit to discover failure-inducing prompts via adaptive mutation and scoring; 5 failure modes, 3 mutators, LLM judge support
+- **[realtime-safety-monitor](https://github.com/SarnadAbhilash/realtime-safety-monitor)** — monitors LLM responses at inference time using patterns discovered by red-teaming; replay, streaming, benchmark, and FastAPI endpoint
+
+> **Research caveat:** This is experimental infrastructure. Automated evaluation can overfit to scorers. Rule-based judges miss subtle failures. LLM judges are noisy. All findings require human review and held-out validation before drawing conclusions.
+
+---
+
 ## Motivation
 
 Deployed LLMs are not run at their training-time defaults. Applications use quantized models to reduce memory costs, speculative decoding to improve throughput, and elevated temperatures for creative tasks. Each of these choices is a potential safety variable.

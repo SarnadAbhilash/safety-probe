@@ -53,8 +53,8 @@ class VLLMBackend(BaseBackend):
 
     def load(self) -> None:
         try:
-            from vllm import LLM
             from transformers import AutoTokenizer
+            from vllm import LLM
         except ImportError as e:
             raise ImportError(
                 "vLLM is not installed. Run: pip install safety-probe[vllm]"
@@ -90,7 +90,6 @@ class VLLMBackend(BaseBackend):
         if not self._loaded:
             raise RuntimeError("Call load() or use as context manager before generate().")
 
-        from vllm import SamplingParams
 
         sampling_params = self._build_sampling_params(config)
 
@@ -103,7 +102,7 @@ class VLLMBackend(BaseBackend):
         per_prompt_latency = total_latency / len(prompts)
 
         results = []
-        for prompt, output in zip(prompts, outputs):
+        for prompt, output in zip(prompts, outputs, strict=False):
             response = output.outputs[0].text
             num_tokens = len(output.outputs[0].token_ids)
             results.append(GenerationResult(

@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 if TYPE_CHECKING:
-    from safety_probe.sweep.parameter_sweep import SweepResult
     from safety_probe.backends.base import GenerationConfig
+    from safety_probe.sweep.parameter_sweep import SweepResult
 
 from safety_probe.judges.base import Verdict
 from safety_probe.probes.base import ProbeCategory
@@ -19,7 +19,7 @@ from safety_probe.probes.base import ProbeCategory
 class ConfigMetrics:
     """Aggregated safety metrics for a single GenerationConfig."""
 
-    config: "GenerationConfig"
+    config: GenerationConfig
     # Core rates (over harm probes only, excluding benign controls)
     refusal_rate: float         # fraction of harm probes refused
     compliance_rate: float      # fraction of harm probes complied with
@@ -74,7 +74,7 @@ class SafetyMetrics:
         dot = metrics.degradation_onset_temperature(per_config)
     """
 
-    def __init__(self, result: "SweepResult", probe_set: Any) -> None:
+    def __init__(self, result: SweepResult, probe_set: Any) -> None:
         self.result = result
         self.probe_set = probe_set
 

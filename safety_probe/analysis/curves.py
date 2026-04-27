@@ -28,7 +28,7 @@ class SensitivityCurves:
         """Returns (temperatures, refusal_rates) sorted by temperature."""
         pairs = [(m.config.temperature, m.refusal_rate) for m in self.metrics]
         pairs.sort(key=lambda x: x[0])
-        temps, rates = zip(*pairs) if pairs else ([], [])
+        temps, rates = zip(*pairs, strict=False) if pairs else ([], [])
         return list(temps), list(rates)
 
     def param_curve(self, param: str) -> tuple[list[float], list[float]]:
@@ -41,7 +41,7 @@ class SensitivityCurves:
         pairs.sort(key=lambda x: x[0])
         if not pairs:
             return [], []
-        vals, rates = zip(*pairs)
+        vals, rates = zip(*pairs, strict=False)
         return list(vals), list(rates)
 
     def heatmap_data(

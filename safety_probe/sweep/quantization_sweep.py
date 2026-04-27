@@ -121,10 +121,9 @@ class QuantizationSweepResult:
         console.print(f"[green]Saved quantization sweep to {path}[/green]")
 
     @classmethod
-    def load(cls, path: str | Path) -> "QuantizationSweepResult":
+    def load(cls, path: str | Path) -> QuantizationSweepResult:
         with open(path) as f:
             data = json.load(f)
-        sweep_results = {k: SweepResult.load.__func__(SweepResult, None) for k in data["sweep_results"]}  # type: ignore[attr-defined]
         # Deserialize each SweepResult from its dict
         from safety_probe.backends.base import GenerationConfig
         from safety_probe.judges.base import JudgementResult

@@ -49,7 +49,7 @@ class JudgementResult:
         }
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "JudgementResult":
+    def from_dict(cls, d: dict[str, Any]) -> JudgementResult:
         return cls(
             verdict=Verdict(d["verdict"]),
             confidence=d["confidence"],

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from safety_probe.backends.base import BaseBackend, GenerationConfig
 from safety_probe.judges.base import BaseJudge, JudgementResult
@@ -55,7 +55,7 @@ class SweepResult:
         console.print(f"[green]Saved sweep results to {path}[/green]")
 
     @classmethod
-    def load(cls, path: str | Path) -> "SweepResult":
+    def load(cls, path: str | Path) -> SweepResult:
         from safety_probe.backends.base import GenerationConfig
         from safety_probe.judges.base import JudgementResult
 
@@ -177,13 +177,13 @@ class ParameterSweep:
                         probe_raw: list[list[str]] = [[] for _ in batch_probes]
                         probe_judgements: list[list[JudgementResult]] = [[] for _ in batch_probes]
 
-                        for sample_idx in range(self.n_samples):
+                        for _sample_idx in range(self.n_samples):
                             if self.verbose:
                                 for p in batch_probes:
                                     console.print(
                                         f"  [dim]→ [{p.category.value}] {p.text[:80]}{'...' if len(p.text) > 80 else ''}[/dim]"
                                     )
-                                console.print(f"  [dim]  calling API...[/dim]")
+                                console.print("  [dim]  calling API...[/dim]")
 
                             _call_start = time.perf_counter()
                             gen_results = self.backend.generate(probe_texts, config)

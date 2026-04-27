@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import re
-from typing import Pattern
+from re import Pattern
 
 from safety_probe.judges.base import BaseJudge, JudgementResult, Verdict
 from safety_probe.probes.base import ProbeCategory
-
 
 # Phrases strongly associated with refusal
 _REFUSAL_PATTERNS: list[str] = [

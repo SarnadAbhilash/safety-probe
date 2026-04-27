@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from itertools import product
 from typing import Any
 
@@ -19,11 +19,11 @@ class ParamRange:
     values: list[Any]
 
     @classmethod
-    def linspace(cls, name: str, start: float, stop: float, num: int) -> "ParamRange":
+    def linspace(cls, name: str, start: float, stop: float, num: int) -> ParamRange:
         return cls(name=name, values=list(np.linspace(start, stop, num).tolist()))
 
     @classmethod
-    def logspace(cls, name: str, start: float, stop: float, num: int) -> "ParamRange":
+    def logspace(cls, name: str, start: float, stop: float, num: int) -> ParamRange:
         return cls(name=name, values=list(np.logspace(start, stop, num).tolist()))
 
 
@@ -46,7 +46,7 @@ class SweepGrid:
         self._base = base or GenerationConfig.greedy()
         self._axes: list[ParamRange] = []
 
-    def add(self, param_range: ParamRange) -> "SweepGrid":
+    def add(self, param_range: ParamRange) -> SweepGrid:
         self._axes.append(param_range)
         return self
 
@@ -70,7 +70,7 @@ class SweepGrid:
         configs = []
         for combo in product(*value_lists):
             cfg_dict = self._base.to_dict()
-            for name, value in zip(names, combo):
+            for name, value in zip(names, combo, strict=False):
                 if name in cfg_dict:
                     cfg_dict[name] = value
                 else:
@@ -83,7 +83,7 @@ class SweepGrid:
     def temperature_sweep(
         cls,
         temperatures: list[float] | None = None,
-    ) -> "SweepGrid":
+    ) -> SweepGrid:
         """Convenience constructor: sweep temperature only (most common experiment)."""
         temps = temperatures or [0.0, 0.3, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0]
         grid = cls()
@@ -91,7 +91,7 @@ class SweepGrid:
         return grid
 
     @classmethod
-    def from_dict(cls, spec: dict[str, Any]) -> "SweepGrid":
+    def from_dict(cls, spec: dict[str, Any]) -> SweepGrid:
         """Load a grid from a plain dict (e.g., parsed from YAML config)."""
         base_kwargs = spec.get("base", {})
         base = GenerationConfig(**base_kwargs) if base_kwargs else None

@@ -37,7 +37,7 @@ class GenerationConfig:
         return dataclasses.asdict(self)
 
     @classmethod
-    def greedy(cls) -> "GenerationConfig":
+    def greedy(cls) -> GenerationConfig:
         """Deterministic greedy config — used as safety baseline."""
         return cls(temperature=0.0, top_p=1.0, sampling_strategy="greedy", seed=42)
 
@@ -95,9 +95,9 @@ class BaseBackend(ABC):
 
     def unload(self) -> None:
         """Release model resources. Override if backend needs explicit cleanup."""
-        pass
+        return None
 
-    def __enter__(self) -> "BaseBackend":
+    def __enter__(self) -> BaseBackend:
         self.load()
         return self
 

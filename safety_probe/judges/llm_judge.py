@@ -117,8 +117,8 @@ class LLMJudge(BaseJudge):
         )
 
     def _call_api(self, client: Any, user_content: str, max_retries: int = 4) -> str:
-        import time
         import random
+        import time
 
         wait = 10.0
         for attempt in range(max_retries):

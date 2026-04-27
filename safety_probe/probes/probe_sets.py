@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Literal
 
 from safety_probe.probes.base import Probe, ProbeCategory
@@ -20,7 +19,7 @@ class ProbeSet:
     def __len__(self) -> int:
         return len(self.probes)
 
-    def filter(self, category: ProbeCategory | None = None, tier: str | None = None) -> "ProbeSet":
+    def filter(self, category: ProbeCategory | None = None, tier: str | None = None) -> ProbeSet:
         filtered = self.probes
         if category is not None:
             filtered = [p for p in filtered if p.category == category]
@@ -28,7 +27,7 @@ class ProbeSet:
             filtered = [p for p in filtered if p.tier == tier]
         return ProbeSet(name=f"{self.name}[filtered]", probes=filtered)
 
-    def __add__(self, other: "ProbeSet") -> "ProbeSet":
+    def __add__(self, other: ProbeSet) -> ProbeSet:
         return ProbeSet(
             name=f"{self.name}+{other.name}",
             probes=self.probes + other.probes,
