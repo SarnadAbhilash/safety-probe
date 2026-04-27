@@ -1,5 +1,9 @@
 # safety-probe
 
+[![CI](https://github.com/SarnadAbhilash/safety-probe/actions/workflows/ci.yml/badge.svg)](https://github.com/SarnadAbhilash/safety-probe/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Inference-time safety evaluation for large language models.
 
 Safety evaluations typically assess a model at a single default configuration. Deployed models rarely run at that configuration — applications use quantized weights to reduce memory footprint, speculative decoding to improve throughput, and elevated sampling temperatures for creative tasks. Each of these choices is a potential safety variable that existing benchmarks do not measure.
