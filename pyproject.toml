@@ -23,11 +23,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-
-[project.urls]
-Repository = "https://github.com/SarnadAbhilash/safety-probe"
-"Bug Tracker" = "https://github.com/SarnadAbhilash/safety-probe/issues"
-
 dependencies = [
     "torch>=2.1",
     "transformers>=4.40",
@@ -58,8 +53,11 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.4",
     "mypy>=1.9",
-    "pre-commit>=3.7",
 ]
+
+[project.urls]
+Repository = "https://github.com/SarnadAbhilash/safety-probe"
+"Bug Tracker" = "https://github.com/SarnadAbhilash/safety-probe/issues"
 
 [project.scripts]
 safety-probe = "safety_probe.cli:app"
