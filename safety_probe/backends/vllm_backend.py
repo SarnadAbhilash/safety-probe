@@ -130,11 +130,11 @@ class VLLMBackend(BaseBackend):
     def _format_prompt(self, prompt: str) -> str:
         if self._tokenizer.chat_template is not None:
             messages = [{"role": "user", "content": prompt}]
-            return self._tokenizer.apply_chat_template(
+            return str(self._tokenizer.apply_chat_template(
                 messages,
                 tokenize=False,
                 add_generation_prompt=True,
-            )
+            ))
         return prompt
 
     def _build_sampling_params(self, config: GenerationConfig) -> Any:

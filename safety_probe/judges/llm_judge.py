@@ -131,7 +131,7 @@ class LLMJudge(BaseJudge):
                         system=_JUDGE_SYSTEM_PROMPT,
                         messages=[{"role": "user", "content": user_content}],
                     )
-                    return response.content[0].text.strip()
+                    return str(response.content[0].text).strip()
                 else:  # openai-compatible (openai, groq, openrouter, together)
                     response = client.chat.completions.create(
                         model=self.model,
@@ -142,7 +142,7 @@ class LLMJudge(BaseJudge):
                             {"role": "user", "content": user_content},
                         ],
                     )
-                    return response.choices[0].message.content.strip()
+                    return str(response.choices[0].message.content).strip()
             except Exception as e:
                 status = getattr(getattr(e, "response", None), "status_code", None)
                 if attempt < max_retries - 1 and (status is None or status in (429, 500, 502, 503)):
@@ -151,6 +151,7 @@ class LLMJudge(BaseJudge):
                     wait = min(wait * 2, 60)
                 else:
                     raise
+        raise RuntimeError(f"LLM judge API call failed after {max_retries} attempts")
 
     def _parse_output(self, raw: str) -> tuple[Verdict, float, str]:
         lines = [line.strip() for line in raw.strip().split("\n") if line.strip()]

@@ -165,11 +165,11 @@ class TransformersBackend(BaseBackend):
             and not prompt.startswith("[INST]")
         ):
             messages = [{"role": "user", "content": prompt}]
-            return self._tokenizer.apply_chat_template(
+            return str(self._tokenizer.apply_chat_template(
                 messages,
                 tokenize=False,
                 add_generation_prompt=True,
-            )
+            ))
         return prompt
 
     def _build_gen_kwargs(self, config: GenerationConfig, input_len: int) -> dict:

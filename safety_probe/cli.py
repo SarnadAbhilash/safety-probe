@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal, cast
 
 import typer
 from dotenv import load_dotenv
@@ -49,7 +49,10 @@ def sweep(
     from safety_probe.sweep.grid import SweepGrid
     from safety_probe.sweep.parameter_sweep import ParameterSweep
 
+    from safety_probe.backends.base import BaseBackend
+
     # Build backend
+    be: BaseBackend
     if backend == "transformers":
         be = TransformersBackend(model)
     elif backend == "openai":
@@ -74,12 +77,13 @@ def sweep(
         grid = SweepGrid.temperature_sweep()
 
     # Build judge
+    _JudgeLevel = Literal["rule", "classifier", "llm"]
     if judge == "rule":
-        levels = ["rule"]
+        levels = cast(list[_JudgeLevel], ["rule"])
     elif judge == "rule+classifier":
-        levels = ["rule", "classifier"]
+        levels = cast(list[_JudgeLevel], ["rule", "classifier"])
     else:
-        levels = ["rule", "classifier", "llm"]
+        levels = cast(list[_JudgeLevel], ["rule", "classifier", "llm"])
     j = CompositeJudge(levels=levels)
 
     probe_set_obj = load_probe_set(probe_set)
@@ -95,9 +99,8 @@ def sweep(
         verbose=verbose,
     )
 
-    results = sweep_obj.run()
+    sweep_obj.run()
     console.print(f"\n[bold green]Sweep complete.[/bold green] Results saved to [cyan]{output_dir}[/cyan]")
-    return results
 
 
 # ---------------------------------------------------------------------------
@@ -142,12 +145,13 @@ def quant_sweep(
         )
 
     # Build judge
+    _JudgeLevel = Literal["rule", "classifier", "llm"]
     if judge == "rule":
-        judge_levels = ["rule"]
+        judge_levels = cast(list[_JudgeLevel], ["rule"])
     elif judge == "rule+classifier":
-        judge_levels = ["rule", "classifier"]
+        judge_levels = cast(list[_JudgeLevel], ["rule", "classifier"])
     else:
-        judge_levels = ["rule", "classifier", "llm"]
+        judge_levels = cast(list[_JudgeLevel], ["rule", "classifier", "llm"])
     j = CompositeJudge(levels=judge_levels)
 
     probe_set_obj = load_probe_set(probe_set)
@@ -227,12 +231,13 @@ def compare(
         raise typer.Exit(1)
 
     # Build judge
+    _JudgeLevel = Literal["rule", "classifier", "llm"]
     if judge == "rule":
-        judge_levels = ["rule"]
+        judge_levels = cast(list[_JudgeLevel], ["rule"])
     elif judge == "rule+classifier":
-        judge_levels = ["rule", "classifier"]
+        judge_levels = cast(list[_JudgeLevel], ["rule", "classifier"])
     else:
-        judge_levels = ["rule", "classifier", "llm"]
+        judge_levels = cast(list[_JudgeLevel], ["rule", "classifier", "llm"])
     j = CompositeJudge(levels=judge_levels)
 
     sweep = ModelComparisonSweep(
@@ -277,11 +282,12 @@ def analyze(
         import time as _time
 
         from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+        _JudgeLevel = Literal["rule", "classifier", "llm"]
         if judge == "rule+llm":
-            judge_obj = CompositeJudge(levels=["rule", "llm"], llm_provider=judge_provider, llm_model=judge_model)
+            judge_obj = CompositeJudge(levels=cast(list[_JudgeLevel], ["rule", "llm"]), llm_provider=judge_provider, llm_model=judge_model)
             min_gap_s = 60.0 / 25  # 25 rpm conservative for LLM judge
         else:
-            judge_obj = CompositeJudge(levels=["rule"])
+            judge_obj = CompositeJudge(levels=cast(list[_JudgeLevel], ["rule"]))
             min_gap_s = 0.0
         probes = probe_set_obj.probes
         n_configs = len(result.configs)
