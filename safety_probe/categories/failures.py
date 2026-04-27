@@ -1,4 +1,4 @@
-"""Canonical behavioral failure mode taxonomy for the AI safety research stack."""
+"""Canonical behavioral failure mode taxonomy."""
 
 from __future__ import annotations
 

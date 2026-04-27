@@ -1,4 +1,4 @@
-"""Behavioral failure categories shared across the AI safety research stack."""
+"""Behavioral failure mode taxonomy."""
 
 from safety_probe.categories.failures import FailureMode
 
